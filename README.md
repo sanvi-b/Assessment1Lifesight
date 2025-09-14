@@ -1,6 +1,3 @@
-# Assessment1Lifesight
-Web page link: https://sanvi-b.github.io/Assessment1Lifesight/
-
 Marketing Intelligence Dashboard
 Project Overview
 This project is an interactive business intelligence (BI) dashboard designed to provide key stakeholders with a clear and actionable view of an e-commerce brand's performance. The dashboard connects campaign-level marketing data with daily business outcomes to reveal how marketing activities drive business results. It is built with a focus on 
