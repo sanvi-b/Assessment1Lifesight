@@ -24,6 +24,7 @@ Campaign-Level Deep Dive: The dashboard ranks top campaigns by both ROAS and Spe
 The dashboard is built on four core datasets, capturing 120 days of daily activity for an e-commerce brand.
 
 Marketing Data: Facebook.csv, Google.csv, and TikTok.csv provide campaign-level data on impressions, clicks, spend, and attributed revenue.
+
 Business Data: Business.csv provides daily business performance metrics such as orders, new orders, new customers, total revenue, and gross profit.
 
 The raw data was explored, prepared, and cleaned by joining and aggregating the datasets to derive key metrics like ROAS, MER, and Customer Acquisition Cost (CAC).
@@ -32,9 +33,13 @@ The raw data was explored, prepared, and cleaned by joining and aggregating the 
 This project uses a static, front-end approach for simplicity and ease of hosting.
 
 HTML: For the dashboard's structure.
+
 CSS (via Tailwind CSS): For styling and a responsive layout.
+
 JavaScript: For data processing, business logic, and rendering the visualizations.
+
 D3.js: For parsing the embedded CSV data.
+
 Chart.js: For creating the interactive and visually appealing charts.
 
 # Deliverables
