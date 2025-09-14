@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing Intelligence Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827;
+            color: #f3f4f6;
+        }
+        .chart-container {
+            position: relative;
+            padding: 1.5rem;
+            background-color: #1f2937;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .kpi-card {
+            background-color: #1f2937;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .kpi-title {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .kpi-value {
+            color: #f9fafb;
+            font-size: 2.25rem;
+            font-weight: 700;
+        }
+        .kpi-description {
+            color: #6b7280;
+            font-size: 0.75rem;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid #374151;
+            padding-bottom: 0.75rem;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-white">Marketing Intelligence Dashboard</h1>
+            <p class="text-gray-400" id="date-range">Analyzing performance for e-commerce brand</p>
+        </header>
+
+        <!-- Main KPI Grid -->
+        <h2 class="section-title">Executive Overview</h2>
+        <main class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6 mb-8">
+            <div class="kpi-card">
+                <h2 class="kpi-title">Total Revenue</h2>
+                <p class="kpi-value" id="total-revenue">$0M</p>
+                <p class="kpi-description">Total sales revenue</p>
+            </div>
+            <div class="kpi-card">
+                <h2 class="kpi-title">Gross Profit</h2>
+                <p class="kpi-value" id="gross-profit">$0M</p>
+                <p class="kpi-description">Total Revenue - COGS</p>
+            </div>
+             <div class="kpi-card">
+                <h2 class="kpi-title">Marketing Efficiency Ratio</h2>
+                <p class="kpi-value" id="mer">0.00</p>
+                <p class="kpi-description">Total Revenue / Total Ad Spend</p>
+            </div>
+            <div class="kpi-card">
+                <h2 class="kpi-title">Attributed ROAS</h2>
+                <p class="kpi-value" id="roas">0.00</p>
+                 <p class="kpi-description">Attributed Revenue / Ad Spend</p>
+            </div>
+            <div class="kpi-card">
+                <h2 class="kpi-title">New Customers</h2>
+                <p class="kpi-value" id="new-customers">0k</p>
+                 <p class="kpi-description">Total new customers acquired</p>
+            </div>
+            <div class="kpi-card">
+                <h2 class="kpi-title">Customer Acquisition Cost</h2>
+                <p class="kpi-value" id="cac">$0.00</p>
+                <p class="kpi-description">Total Ad Spend / New Customers</p>
+            </div>
+             <div class="kpi-card">
+                <h2 class="kpi-title">Avg. Click-Through Rate</h2>
+                <p class="kpi-value" id="avg-ctr">0.00%</p>
+                <p class="kpi-description">Clicks / Impressions</p>
+            </div>
+             <div class="kpi-card">
+                <h2 class="kpi-title">Avg. Cost Per Click</h2>
+                <p class="kpi-value" id="avg-cpc">$0.00</p>
+                <p class="kpi-description">Spend / Clicks</p>
+            </div>
+        </main>
+        
+        <h2 class="section-title">Performance Over Time</h2>
+        <!-- Charts Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
+            <!-- Time Series Chart -->
+            <div class="chart-container lg:col-span-1">
+                <h3 class="text-lg font-semibold mb-4">Daily Business & Marketing Trends</h3>
+                <canvas id="timeSeriesChart"></canvas>
+            </div>
+             <div class="chart-container lg:col-span-1">
+                <h3 class="text-lg font-semibold mb-4">Daily New vs. Returning Orders</h3>
+                <canvas id="orderTypeChart"></canvas>
+            </div>
+        </div>
+
+        <h2 class="section-title">Platform & Tactic Performance</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+             <div class="chart-container">
+                <h3 class="text-lg font-semibold mb-4">Spend vs Attributed Revenue by Platform</h3>
+                <canvas id="spendVsRevenueChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold mb-4">ROAS by Platform</h3>
+                <canvas id="roasByPlatformChart"></canvas>
+            </div>
+             <div class="chart-container">
+                <h3 class="text-lg font-semibold mb-4">Spend by Tactic</h3>
+                <canvas id="spendByTacticChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold mb-4">ROAS by Tactic</h3>
+                <canvas id="roasByTacticChart"></canvas>
+            </div>
+        </div>
+
+        <h2 class="section-title">Geographical Performance</h2>
+         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold mb-4">Spend vs Attributed Revenue by State</h3>
+                <canvas id="spendVsRevenueByStateChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold mb-4">ROAS by State</h3>
+                <canvas id="roasByStateChart"></canvas>
+            </div>
+        </div>
+
+        <h2 class="section-title">Top Campaign Performance</h2>
+         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold mb-4">Top 5 Campaigns by ROAS</h3>
+                <canvas id="topCampaignsRoasChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold mb-4">Top 5 Campaigns by Spend</h3>
+                <canvas id="topCampaignsSpendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function processAndRenderData() {
+            // --- EMBEDDED CSV DATA (SAMPLE) ---
+            const facebookCsvData = `date,tactic,state,campaign,impression,clicks,spend,attributed revenue
+2025-05-16,ASC,NY,Facebook - ASC - C01,124603,1888,1442.28,4706.23
+2025-05-17,ASC,NY,Facebook - ASC - C01,139596,2086,1235.47,3674.32
+2025-05-18,ASC,NY,Facebook - ASC - C01,167700,2635,1169.83,3317.04
+2025-05-19,ASC,NY,Facebook - ASC - C01,132781,2045,1775.26,5250.54
+2025-05-20,ASC,NY,Facebook - ASC - C01,115201,1634,987.1,2409.58
+2025-05-21,ASC,NY,Facebook - ASC - C01,101433,1500,994.24,2607.73
+2025-05-22,ASC,NY,Facebook - ASC - C01,364349,5045,3057.92,9265.95
+2025-05-16,Prospecting,NY,Facebook - Prospecting - C02,256350,2838,3181.96,8346.97
+2025-05-17,Prospecting,NY,Facebook - Prospecting - C02,136012,1673,1554.35,4034.35
+2025-05-18,Prospecting,NY,Facebook - Prospecting - C02,214040,2793,1575.7,4317.8
+2025-05-19,Prospecting,NY,Facebook - Prospecting - C02,109150,1271,820.33,2332.67
+2025-05-16,Prospecting,NY,Facebook - Prospecting - C03,167543,2060,1186.48,2750.87
+2025-05-17,Prospecting,NY,Facebook - Prospecting - C03,129769,1570,1423.57,3917.57
+2025-05-18,Prospecting,NY,Facebook - Prospecting - C03,107831,1234,1337.6,3439.31
+2025-05-16,ASC,CA,Facebook - Prospecting - C04,136939,2235,1076.66,2925.58
+2025-05-17,ASC,CA,Facebook - Prospecting - C04,182930,2567,1286.11,3202.96`;
+
+            const googleCsvData = `date,tactic,state,campaign,impression,clicks,spend,attributed revenue
+2025-05-16,Non-Branded Search,CA,Google - Display - C01,73152,3250,365.01,1131.27
+2025-05-17,Non-Branded Search,CA,Google - Display - C01,111930,5259,1128.02,3589.82
+2025-05-18,Non-Branded Search,CA,Google - Display - C01,124627,5182,1155.82,4301.39
+2025-05-19,Non-Branded Search,CA,Google - Display - C01,321754,14764,2864.57,9123.52
+2025-05-16,Non-Branded Search,NY,Google - Non-Branded Search - C02,339732,16199,2443.92,8742.81
+2025-05-17,Non-Branded Search,NY,Google - Non-Branded Search - C02,232887,11337,714.1,2380.87
+2025-05-18,Non-Branded Search,NY,Google - Non-Branded Search - C02,131395,5902,600.92,2194.86
+2025-05-19,Non-Branded Search,NY,Google - Non-Branded Search - C02,162016,6846,1346.07,4060.13
+2025-05-16,Non-Branded Search,CA,Google - Non-Branded Search - C03,161711,7573,935.27,3435.86
+2025-05-17,Non-Branded Search,CA,Google - Non-Branded Search - C03,189707,9127,1945.84,6095.28
+2025-05-18,Non-Branded Search,CA,Google - Non-Branded Search - C03,219372,10293,1351.55,4566.64`;
+
+            const tiktokCsvData = `date,tactic,state,campaign,impression,clicks,spend,attributed revenue
+2025-05-16,Retargeting,CA,TikTok - Retargeting - C01,67236,1018,821.74,2232.18
+2025-05-17,Retargeting,CA,TikTok - Retargeting - C01,182920,3121,1447.52,5122.74
+2025-05-18,Retargeting,CA,TikTok - Retargeting - C01,277408,4345,2645.03,7723.98
+2025-05-19,Retargeting,CA,TikTok - Retargeting - C01,165423,2821,1758.43,6039.97
+2025-05-16,Retargeting,CA,TikTok - Retargeting - C02,85543,1439,637.54,1897.52
+2025-05-17,Retargeting,CA,TikTok - Retargeting - C02,94431,1404,1033.46,3243.08
+2025-05-18,Retargeting,CA,TikTok - Retargeting - C02,169438,2920,1325.61,4170.41
+2025-05-16,Spark Ads,CA,TikTok - Retargeting - C03,83856,1132,776.06,1839.44
+2025-05-17,Spark Ads,CA,TikTok - Retargeting - C03,103512,1270,968.99,2386.86
+2025-05-18,Spark Ads,CA,TikTok - Retargeting - C03,119095,1549,1110.97,2718.01`;
+
+            const businessCsvData = `date,# of orders,# of new orders,new customers,total revenue,gross profit,COGS
+2025-05-16,2452,987,989,238010.95,124434.71,113576.24
+2025-05-17,2173,772,761,224086.4,126119.02,97967.38
+2025-05-18,2749,1275,1192,226582.57,128282.08,98300.49
+2025-05-19,2060,1012,960,203540.86,100212.05,103328.81
+2025-05-20,1791,910,908,188081.24,115962.11,72119.13
+2025-05-21,2874,934,872,251286.55,123962.87,127323.68
+2025-05-22,1704,848,842,186182.97,99768.23,86414.74
+2025-05-23,2745,1268,1177,243080.55,130791.92,112288.63
+2025-05-24,3096,1097,1060,282268.06,174043.94,108224.12
+2025-05-25,2254,1023,1041,227809.53,114404.11,113405.42`;
+
+            // --- DATA PARSING & CONSOLIDATION ---
+            const facebookData = d3.csvParse(facebookCsvData);
+            const googleData = d3.csvParse(googleCsvData);
+            const tiktokData = d3.csvParse(tiktokCsvData);
+            const businessData = d3.csvParse(businessCsvData);
+
+            facebookData.forEach(d => d.platform = 'Facebook');
+            googleData.forEach(d => d.platform = 'Google');
+            tiktokData.forEach(d => d.platform = 'TikTok');
+
+            const marketingData = [...facebookData, ...googleData, ...tiktokData];
+
+            // --- DATA CLEANING AND TYPE CONVERSION ---
+            const parseDate = d3.timeParse("%Y-%m-%d");
+            const numberFieldsMarketing = ['impression', 'clicks', 'spend', 'attributed revenue'];
+            const numberFieldsBusiness = ['# of orders', '# of new orders', 'new customers', 'total revenue', 'gross profit', 'COGS'];
+
+            marketingData.forEach(d => {
+                d.date = parseDate(d.date);
+                for (const field of numberFieldsMarketing) {
+                    d[field] = +d[field] || 0;
+                }
+            });
+
+            businessData.forEach(d => {
+                d.date = parseDate(d.date);
+                for (const field of numberFieldsBusiness) {
+                    const cleanField = field.replace(/# of /g, '').replace(/ /g, '_');
+                    d[cleanField] = +d[field] || 0;
+                }
+            });
+            
+            // --- DATA AGGREGATION ---
+            const marketingByDay = Array.from(d3.rollup(
+                marketingData,
+                v => ({
+                    spend: d3.sum(v, d => d.spend),
+                    attributed_revenue: d3.sum(v, d => d['attributed revenue']),
+                    clicks: d3.sum(v, d => d.clicks),
+                    impressions: d3.sum(v, d => d.impression)
+                }),
+                d => d.date.toISOString().split('T')[0] 
+            ));
+            
+            const marketingMap = new Map(marketingByDay);
+
+            // --- MASTER DATASET CREATION ---
+            const masterData = businessData.map(b => {
+                const dateStr = b.date.toISOString().split('T')[0];
+                const marketingMetrics = marketingMap.get(dateStr) || { spend: 0, attributed_revenue: 0, clicks: 0, impressions: 0 };
+                const returning_orders = b.orders - b.new_orders;
+                return { ...b, ...marketingMetrics, returning_orders };
+            });
+            
+            masterData.sort((a, b) => a.date - b.date);
+
+            renderDashboard(masterData, marketingData);
+        }
+
+        // --- CHART RENDERING LOGIC ---
+        function renderDashboard(masterData, marketingData) {
+            const chartJsDefaults = {
+                color: '#9ca3af',
+                borderColor: '#4b5563'
+            };
+            Chart.defaults.color = chartJsDefaults.color;
+            Chart.defaults.borderColor = chartJsDefaults.borderColor;
+            
+            // --- CALCULATE KPIs ---
+            const totalRevenue = d3.sum(masterData, d => d.total_revenue);
+            const totalGrossProfit = d3.sum(masterData, d => d.gross_profit);
+            const totalSpend = d3.sum(masterData, d => d.spend);
+            const totalNewCustomers = d3.sum(masterData, d => d.new_customers);
+            const totalAttributedRevenue = d3.sum(masterData, d => d.attributed_revenue);
+            const totalClicks = d3.sum(masterData, d => d.clicks);
+            const totalImpressions = d3.sum(masterData, d => d.impressions);
+            
+            const mer = totalSpend > 0 ? totalRevenue / totalSpend : 0;
+            const roas = totalSpend > 0 ? totalAttributedRevenue / totalSpend : 0;
+            const cac = totalNewCustomers > 0 ? totalSpend / totalNewCustomers : 0;
+            const avgCtr = totalImpressions > 0 ? totalClicks / totalImpressions : 0;
+            const avgCpc = totalClicks > 0 ? totalSpend / totalClicks : 0;
+
+
+            // --- UPDATE KPI CARDS ---
+            document.getElementById('total-revenue').innerText = `$${(totalRevenue / 1_000_000).toFixed(2)}M`;
+            document.getElementById('gross-profit').innerText = `$${(totalGrossProfit / 1_000_000).toFixed(2)}M`;
+            document.getElementById('mer').innerText = mer.toFixed(2);
+            document.getElementById('roas').innerText = roas.toFixed(2);
+            document.getElementById('new-customers').innerText = `${(totalNewCustomers / 1000).toFixed(1)}k`;
+            document.getElementById('cac').innerText = `$${cac.toFixed(2)}`;
+            document.getElementById('avg-ctr').innerText = `${(avgCtr * 100).toFixed(2)}%`;
+            document.getElementById('avg-cpc').innerText = `$${avgCpc.toFixed(2)}`;
+
+            const startDate = d3.min(masterData, d => d.date);
+            const endDate = d3.max(masterData, d => d.date);
+            document.getElementById('date-range').innerText = `Data from ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`;
+
+            // --- CHART: TIME SERIES ---
+            new Chart(document.getElementById('timeSeriesChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: masterData.map(d => d.date),
+                    datasets: [
+                        { label: 'Total Revenue', data: masterData.map(d => d.total_revenue), borderColor: '#34d399', yAxisID: 'y', tension: 0.3, pointRadius: 0 },
+                        { label: 'Gross Profit', data: masterData.map(d => d.gross_profit), borderColor: '#60a5fa', yAxisID: 'y', tension: 0.3, pointRadius: 0 },
+                        { label: 'Total Ad Spend', data: masterData.map(d => d.spend), borderColor: '#fbbf24', yAxisID: 'y1', tension: 0.3, pointRadius: 0 }
+                    ]
+                },
+                options: {
+                    responsive: true, interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        x: { type: 'time', time: { unit: 'day' } },
+                        y: { position: 'left', title: { display: true, text: 'Revenue & Profit ($)' } },
+                        y1: { position: 'right', title: { display: true, text: 'Ad Spend ($)' }, grid: { drawOnChartArea: false } }
+                    }
+                }
+            });
+            
+            // --- CHART: NEW VS RETURNING ORDERS ---
+             new Chart(document.getElementById('orderTypeChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: masterData.map(d => d.date),
+                    datasets: [
+                        { label: 'New Orders', data: masterData.map(d => d.new_orders), borderColor: '#34d399', backgroundColor: '#34d39950', fill: true, tension: 0.3, pointRadius: 0 },
+                        { label: 'Returning Orders', data: masterData.map(d => d.returning_orders), borderColor: '#60a5fa', backgroundColor: '#60a5fa50', fill: true, tension: 0.3, pointRadius: 0 }
+                    ]
+                },
+                options: {
+                    responsive: true, interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        x: { type: 'time', time: { unit: 'day' } },
+                        y: { stacked: true, title: { display: true, text: 'Number of Orders' } }
+                    }
+                }
+            });
+
+
+            // --- PLATFORM ANALYSIS ---
+            const platformPerformance = Array.from(d3.rollup(marketingData, v => ({ spend: d3.sum(v, d => d.spend), revenue: d3.sum(v, d => d['attributed revenue']) }), d => d.platform));
+            const platformMap = new Map(platformPerformance);
+
+            new Chart(document.getElementById('roasByPlatformChart').getContext('2d'), {
+                type: 'bar',
+                data: { labels: [...platformMap.keys()], datasets: [{ label: 'ROAS', data: [...platformMap.values()].map(d => d.spend > 0 ? d.revenue / d.spend : 0), backgroundColor: ['#60a5fa', '#34d399', '#f87171'] }] },
+                options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Return on Ad Spend (ROAS)' } } } }
+            });
+
+            new Chart(document.getElementById('spendVsRevenueChart').getContext('2d'), {
+                type: 'bar',
+                data: { labels: [...platformMap.keys()], datasets: [{ label: 'Spend', data: [...platformMap.values()].map(d => d.spend), backgroundColor: '#fbbf24' }, { label: 'Attributed Revenue', data: [...platformMap.values()].map(d => d.revenue), backgroundColor: '#34d399' }] },
+                options: { responsive: true, scales: { x: { stacked: false }, y: { stacked: false, title: { display: true, text: 'Amount ($)' } } } }
+            });
+            
+             // --- TACTIC ANALYSIS ---
+            const tacticPerformance = Array.from(d3.rollup(marketingData, v => ({ spend: d3.sum(v, d => d.spend), revenue: d3.sum(v, d => d['attributed revenue']) }), d => d.tactic));
+            const tacticMap = new Map(tacticPerformance);
+
+            new Chart(document.getElementById('roasByTacticChart').getContext('2d'), {
+                type: 'bar',
+                data: { labels: [...tacticMap.keys()].sort(), datasets: [{ label: 'ROAS by Tactic', data: [...tacticMap.keys()].sort().map(key => { const t = tacticMap.get(key); return t.spend > 0 ? t.revenue / t.spend : 0; }), backgroundColor: ['#60a5fa', '#34d399', '#f87171', '#c084fc', '#fbbf24'] }] },
+                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'Return on Ad Spend (ROAS)' } } } }
+            });
+
+            new Chart(document.getElementById('spendByTacticChart').getContext('2d'), {
+                type: 'doughnut',
+                data: { labels: [...tacticMap.keys()], datasets: [{ label: 'Spend by Tactic', data: [...tacticMap.values()].map(d => d.spend), backgroundColor: ['#60a5fa', '#34d399', '#f87171', '#c084fc', '#fbbf24'] }] },
+                options: { responsive: true, plugins: { legend: { position: 'top' } } }
+            });
+
+            // --- GEOGRAPHICAL (STATE) ANALYSIS ---
+            const statePerformance = Array.from(d3.rollup(marketingData, v => ({ spend: d3.sum(v, d => d.spend), revenue: d3.sum(v, d => d['attributed revenue']) }), d => d.state));
+            const stateMap = new Map(statePerformance);
+
+            new Chart(document.getElementById('spendVsRevenueByStateChart').getContext('2d'), {
+                 type: 'bar',
+                data: { labels: [...stateMap.keys()], datasets: [{ label: 'Spend', data: [...stateMap.values()].map(d => d.spend), backgroundColor: '#fbbf24' }, { label: 'Attributed Revenue', data: [...stateMap.values()].map(d => d.revenue), backgroundColor: '#34d399' }] },
+                options: { responsive: true, scales: { x: { stacked: false }, y: { stacked: false, title: { display: true, text: 'Amount ($)' } } } }
+            });
+
+            new Chart(document.getElementById('roasByStateChart').getContext('2d'), {
+                type: 'bar',
+                data: { labels: [...stateMap.keys()], datasets: [{ label: 'ROAS', data: [...stateMap.values()].map(d => d.spend > 0 ? d.revenue / d.spend : 0), backgroundColor: ['#60a5fa', '#34d399'] }] },
+                options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Return on Ad Spend (ROAS)' } } } }
+            });
+
+            // --- CAMPAIGN ANALYSIS ---
+            const campaignPerformance = Array.from(d3.rollup(marketingData, 
+                v => ({ 
+                    spend: d3.sum(v, d => d.spend), 
+                    revenue: d3.sum(v, d => d['attributed revenue']), 
+                    roas: d3.sum(v, d => d.spend) > 0 ? d3.sum(v, d => d['attributed revenue']) / d3.sum(v, d => d.spend) : 0 
+                }), 
+                d => d.campaign
+            ));
+            
+            const topRoasCampaigns = campaignPerformance.sort(([,a],[,b]) => b.roas - a.roas).slice(0,5);
+            new Chart(document.getElementById('topCampaignsRoasChart').getContext('2d'), {
+                type: 'bar',
+                data: { labels: topRoasCampaigns.map(([key,]) => key), datasets: [{ label: 'ROAS', data: topRoasCampaigns.map(([,val]) => val.roas), backgroundColor: '#c084fc' }] },
+                options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'ROAS' } } } }
+            });
+
+            const topSpendCampaigns = campaignPerformance.sort(([,a],[,b]) => b.spend - a.spend).slice(0,5);
+            new Chart(document.getElementById('topCampaignsSpendChart').getContext('2d'), {
+                type: 'bar',
+                data: { labels: topSpendCampaigns.map(([key,]) => key), datasets: [{ label: 'Spend', data: topSpendCampaigns.map(([,val]) => val.spend), backgroundColor: '#f87171' }] },
+                options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Spend ($)' } } } }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', processAndRenderData);
+    </script>
+</body>
+</html>
+
