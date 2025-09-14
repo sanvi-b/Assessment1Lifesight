@@ -4,21 +4,29 @@ This project is an interactive business intelligence (BI) dashboard designed to 
 
 # Features & Analyses
 The dashboard presents a coherent story by exploring key metrics and the relationship between marketing and business data.
+
 Executive Overview-
 Key Performance Indicators (KPIs): The dashboard begins with a high-level summary of critical metrics, including Total Revenue, Gross Profit, Marketing Efficiency Ratio (MER), and Attributed ROAS. This section is designed to help a business stakeholder make sense of how marketing activity connects with business outcomes.
+
 Performance Over Time-
 Trend Analysis: Time-series charts visualize trends for Total Revenue, Gross Profit, and Ad Spend over the 120-day period. This helps stakeholders see patterns and understand performance fluctuations. A stacked chart also shows daily orders broken down by new vs. returning customers, providing insight into customer acquisition and retention.
+
 Platform & Tactic Performance-
 Channel-Level Breakdown: The dashboard breaks down performance by marketing platform (e.g., Facebook, Google, TikTok) and tactic. This analysis helps identify which channels are most efficient by comparing spend, attributed revenue, and ROAS.
+
 Geographical Performance-
 State-Level Insights: An analysis of spend, revenue, and ROAS by state helps identify top-performing regions and opportunities for geographical marketing optimization.
+
 Top Campaigns-
 Campaign-Level Deep Dive: The dashboard ranks top campaigns by both ROAS and Spend. This allows marketing leaders to quickly identify which campaigns are driving the highest return and which ones have the largest budget allocation.
 
 # Data & Methodology
 The dashboard is built on four core datasets, capturing 120 days of daily activity for an e-commerce brand.
+
 Marketing Data: Facebook.csv, Google.csv, and TikTok.csv provide campaign-level data on impressions, clicks, spend, and attributed revenue.
+
 Business Data: Business.csv provides daily business performance metrics such as orders, new orders, new customers, total revenue, and gross profit.
+
 The raw data was explored, prepared, and cleaned by joining and aggregating the datasets to derive key metrics like ROAS, MER, and Customer Acquisition Cost (CAC).
 
 # Technical Stack
